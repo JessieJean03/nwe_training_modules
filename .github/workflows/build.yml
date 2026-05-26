@@ -3,7 +3,6 @@ name: Build Windows Installer
 on:
   push:
     branches: [ main, master ]
-    tags: [ 'v*' ]
   workflow_dispatch:
 
 permissions:
@@ -30,25 +29,36 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Read app version
+        id: pkg
+        shell: pwsh
+        run: |
+          $v = (Get-Content package.json | ConvertFrom-Json).version
+          echo "version=$v" >> $env:GITHUB_OUTPUT
+          Write-Host "App version: $v"
+
       - name: List dist contents
         if: always()
         shell: pwsh
         run: |
           if (Test-Path dist) { Get-ChildItem -Recurse dist } else { Write-Host 'No dist folder' }
 
-      - name: Upload build artifact (always)
+      - name: Upload build artifact
         if: success()
         uses: actions/upload-artifact@v4
         with:
           name: Training-Modules-Installer
-          path: |
-            dist/*.exe
+          path: dist/*.exe
           retention-days: 30
           if-no-files-found: error
 
-      - name: Publish to GitHub Releases (only on tag push)
-        if: startsWith(github.ref, 'refs/tags/v')
+      - name: Publish / update GitHub Release
+        if: success()
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: v${{ steps.pkg.outputs.version }}
+          name: v${{ steps.pkg.outputs.version }}
           files: dist/*.exe
           generate_release_notes: true
+          make_latest: true
+          fail_on_unmatched_files: true
