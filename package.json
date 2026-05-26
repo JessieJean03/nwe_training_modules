@@ -1,6 +1,6 @@
 {
   "name": "interactive-training-modules",
-  "version": "1.2",
+  "version": "1.1.0",
   "description": "NWE Brands SBT Team Interactive Training Modules",
   "main": "main.js",
   "scripts": {
