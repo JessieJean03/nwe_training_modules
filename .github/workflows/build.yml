@@ -3,7 +3,11 @@ name: Build Windows Installer
 on:
   push:
     branches: [ main, master ]
+    tags: [ 'v*' ]
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -26,20 +30,25 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: List dist contents (for debugging)
+      - name: List dist contents
         if: always()
         shell: pwsh
         run: |
-          if (Test-Path dist) { Get-ChildItem -Recurse dist } else { Write-Host 'No dist folder produced' }
+          if (Test-Path dist) { Get-ChildItem -Recurse dist } else { Write-Host 'No dist folder' }
 
-      - name: Upload installer
+      - name: Upload build artifact (always)
         if: success()
         uses: actions/upload-artifact@v4
         with:
           name: Training-Modules-Installer
           path: |
             dist/*.exe
-            dist/*.msi
-            dist/*.zip
           retention-days: 30
           if-no-files-found: error
+
+      - name: Publish to GitHub Releases (only on tag push)
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*.exe
+          generate_release_notes: true
