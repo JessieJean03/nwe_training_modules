@@ -26,11 +26,20 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: List dist contents (for debugging)
+        if: always()
+        shell: pwsh
+        run: |
+          if (Test-Path dist) { Get-ChildItem -Recurse dist } else { Write-Host 'No dist folder produced' }
+
       - name: Upload installer
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: Training-Modules-Installer
           path: |
-            dist/Training-Modules-Setup-*.exe
-            dist/Training-Modules-Portable-*.exe
+            dist/*.exe
+            dist/*.msi
+            dist/*.zip
           retention-days: 30
+          if-no-files-found: error
