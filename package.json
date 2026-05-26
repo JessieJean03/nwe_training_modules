@@ -1,0 +1,62 @@
+{
+  "name": "interactive-training-modules",
+  "version": "1.1.0",
+  "description": "NWE Brands SBT Team Interactive Training Modules",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win --x64",
+    "build-portable": "electron-builder --win portable --x64"
+  },
+  "build": {
+    "appId": "com.nwebrands.training-modules",
+    "productName": "Interactive Training Modules",
+    "copyright": "NWE Brands",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "index.html",
+      "build/**"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        },
+        {
+          "target": "portable",
+          "arch": ["x64"]
+        }
+      ],
+      "icon": "build/widget.ico",
+      "publisherName": "NWE Brands"
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "allowElevation": false,
+      "installerIcon": "build/widget.ico",
+      "uninstallerIcon": "build/widget.ico",
+      "installerHeaderIcon": "build/widget.ico",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Interactive Training Modules",
+      "menuCategory": "NWE Brands",
+      "deleteAppDataOnUninstall": false,
+      "displayLanguageSelector": false,
+      "installerLanguages": ["en_US"],
+      "license": null,
+      "artifactName": "Training-Modules-Setup-${version}.exe"
+    },
+    "portable": {
+      "artifactName": "Training-Modules-Portable-${version}.exe"
+    }
+  },
+  "devDependencies": {
+    "electron": "^29.0.0",
+    "electron-builder": "^24.0.0"
+  }
+}
